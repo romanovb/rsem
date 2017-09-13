@@ -1,12 +1,12 @@
 ---
 title: "Google Trends research on Trello and Slack"
 author: "B. Romanov, D.Pak, M. Votyakova"
-date: '13 сентября 2017 г '
+date: '13 September 2017 '
 output:
-  html_document: 
-    toc: true
-    toc_float: true
+  html_document:
+    toc: yes
     toc_depth: 3
+    toc_float: yes
 ---
 
 
