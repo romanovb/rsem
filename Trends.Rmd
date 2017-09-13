@@ -1,0 +1,106 @@
+---
+title: "Google Trends research on Trello and Slack"
+author: "B. Romanov, D.Pak, M. Votyakova"
+date: '13 сентября 2017 г '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+Здесь вступление
+
+## Purpose
+
+Здесь цели
+
+## Subjects of the research
+
+Здесь описание объектов исследования
+
+### Trello
+![Trello logo](https://d2k1ftgv7pobq7.cloudfront.net/meta/u/res/images/brand-assets/Logos/0099ec3754bf473d2bbf317204ab6fea/trello-logo-blue.png)
+
+### Slack
+![Slack logo](https://www.scrumdesk.com/wp-content/uploads/slack-logo.png)
+
+# Analysis 
+Здесь переход какой-нибудь
+
+## General information
+Вступление к общему исследованию
+```{r Подключение библиотек, message=FALSE, warning=FALSE, include=FALSE}
+library(gtrendsR) # пакет для работы с Google Trends
+library(forcats) # пакет для работы с факторами
+library(tidyverse) # набор пакетов для преобразования и визуализации данных
+library(stringr) # пакет для работы со строками
+```
+
+
+```{r, include=FALSE}
+dtrend <- gtrends(c("Trello", "Slack"), time = "today+5-y")
+```
+
+### Dynamics
+```{r, echo=FALSE}
+ggplot(data=dtrend$interest_over_time) + 
+  geom_line(mapping = aes(x=date, y=hits, color=keyword), size=1) + labs(title="Trends dynamics", x = "Year", y = "Search hits", color = "Keyword")
+```
+
+Здесь выводы об общей динамике
+
+### Related queries
+
+```{r, echo=FALSE}
+head(dtrend$related_queries %>% filter(keyword=="Trello") %>% select(subject, value), 10)
+```
+
+Здесь выводы о связанных запросах трелло (внимание на 4 и 5)
+
+```{r, echo=FALSE}
+head(dtrend$related_queries %>% filter(keyword=="Slack") %>% select(subject, value), 10)
+```
+
+Здесь выводы о связанных запросах
+
+### Russia vs World - Trello
+
+Вступление к российским запросам - трелло
+
+```{r, include=FALSE}
+dtrend_rus_tr <- gtrends(c("Trello"), geo = c("RU"),time = "today+5-y")
+dtrend_tot_tr <- gtrends(c("Trello"),time = "today+5-y")
+
+```
+
+```{r, echo=FALSE}
+ggplot(data = dtrend_tot_tr[[1]]) + geom_line(aes(date, hits, color = "World")) + geom_line(data = dtrend_rus_tr[[1]], aes(date,hits,color = "Russia")) + labs(title = "Russia vs World on Trello search hits", x = "Date", y = "Search hits", color = "Region")
+
+```
+
+Здесь анализ графика
+
+### Russia vs World on Slack search hits
+
+Здесь вступление к российским запросам
+
+```{r, include=FALSE}
+dtrend_rus_sl <- gtrends(c("Slack"), geo = c("RU"),time = "today+5-y")
+dtrend_tot_sl <- gtrends(c("Slack"),time = "today+5-y")
+
+```
+
+```{r, echo=FALSE}
+ggplot(data = dtrend_tot_sl[[1]]) + geom_line(aes(date, hits, color = "World")) + geom_line(data = dtrend_rus_sl[[1]], aes(date,hits,color = "Russia")) + labs(title = "Russia vs World on Slack search hits", x = "Date", y = "Search hits", color = "Region")
+
+```
+
+Здесь анализ графика
+
+### Conclusions
+
+
+Здесь заключение
