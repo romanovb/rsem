@@ -2,12 +2,14 @@
 title: "Google Trends research on Trello and Slack"
 author: "B. Romanov, D.Pak, M. Votyakova"
 date: '13 сентября 2017 г '
-output: html_document
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+    toc_depth: 3
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 # Introduction
 
@@ -83,7 +85,7 @@ ggplot(data = dtrend_tot_tr[[1]]) + geom_line(aes(date, hits, color = "World")) 
 
 Здесь анализ графика
 
-### Russia vs World on Slack search hits
+### Russia vs World - Slack
 
 Здесь вступление к российским запросам
 
@@ -100,7 +102,7 @@ ggplot(data = dtrend_tot_sl[[1]]) + geom_line(aes(date, hits, color = "World")) 
 
 Здесь анализ графика
 
-### Conclusions
+# Conclusions
 
 
 Здесь заключение
