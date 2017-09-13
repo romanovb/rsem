@@ -68,7 +68,7 @@ head(dtrend$related_queries %>% filter(keyword=="Slack") %>% select(subject, val
 
 Здесь выводы о связанных запросах
 
-##Russian Experience
+## Russian Experience
 
 
 ### Russia vs World - Trello
