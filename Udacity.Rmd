@@ -3,14 +3,14 @@ title: "Задания из MOOC"
 author: "Б. Романов, М. Вотякова, Д. Пак"
 date: '23 сентября 2017 г '
 output: html_document
-toc: 'yes'
+toc: true
 
 ---
 
 
 # Задание 1 - Diamonds
 
-```{r Загрузка библиотек, данных}
+```{r Загрузка библиотек, include=FALSE}
 library(tidyverse)
 library(ggplot2)
 data(diamonds)
@@ -120,7 +120,6 @@ ggplot(data = diamonds) + geom_boxplot(mapping = aes(x=clarity, y= carat)) + coo
 by(diamonds$price, diamonds$color, summary)
 IQR(subset(diamonds, color == "D")$price)
 IQR(subset(diamonds, color == "J")$price)
-?subset
 ```
 
 ## Ответы на вопросы:
