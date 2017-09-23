@@ -4,6 +4,11 @@ author: "Б. Романов, М. Вотякова, Д. Пак"
 date: '23 сентября 2017 г '
 output: html_document
 ---
+```{r Библиотеки}
+library(tidyverse)
+```
+
+
 
 ```{r Параметры}
 h <- 0.16 # Годовые затраты на хранение в расчете на единицу
@@ -11,5 +16,19 @@ K <- 2 # Затраты на размещение заказа
 P <- 8 # Закупочная цена
 D <- 10000 # Объем годовой потребности
 ```
+
+```{r Модель}
+
+ggplot(data = tibble(q = c(0,2000)), mapping = aes(q)) +
+          stat_function(fun = function(q) {h * q / 2}, aes(color = "Holding cost"), size = 1.2) +
+          stat_function (fun = function(q) {K*D/q}, aes(color = "Ordering cost"), size = 1.2) +
+          stat_function(fun = function(q) {K*D/q + h*q/2}, aes(color = "Total cost"), size = 1.2) +
+   labs(title = "Economic Order Quantity", y = "Cost", x = "Order Quantity, Q", color = "Cost type") +
+   scale_y_continuous(limits=c(0,200)) +
+   theme_bw() +
+   theme(plot.title = element_text(hjust=0.5))
+
+```
+
 
 
