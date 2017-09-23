@@ -17,16 +17,24 @@ P <- 8 # Закупочная цена
 D <- 10000 # Объем годовой потребности
 ```
 
-```{r Модель}
 
-ggplot(data = tibble(q = c(0,2000)), mapping = aes(q)) +
-          stat_function(fun = function(q) {h * q / 2}, aes(color = "Holding cost"), size = 1.2) +
+
+
+```{r Модель}
+eoq <- sqrt(2*D*K/h)
+
+
+ggplot(data = tibble(q = c(0,2000), y = c(0,200)), mapping = aes(q)) +
+          stat_function(fun = function(q) {h * q / 2}, aes(color = "Holding cost"), size = 1.2)+
           stat_function (fun = function(q) {K*D/q}, aes(color = "Ordering cost"), size = 1.2) +
           stat_function(fun = function(q) {K*D/q + h*q/2}, aes(color = "Total cost"), size = 1.2) +
    labs(title = "Economic Order Quantity", y = "Cost", x = "Order Quantity, Q", color = "Cost type") +
-   scale_y_continuous(limits=c(0,200)) +
+   coord_cartesian(ylim=c(0,200)) +
    theme_bw() +
-   theme(plot.title = element_text(hjust=0.5))
+   theme(plot.title = element_text(hjust=0.5)) +
+   geom_segment(x = eoq, y = 0,xend=eoq, yend = (K*D/eoq + h*eoq/2), color = 'grey', size = 1.2, linetype="dashed")
+
+
 
 ```
 
