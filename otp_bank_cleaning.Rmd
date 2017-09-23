@@ -12,49 +12,14 @@ output:
   2. Изучите распределения всех **количественных** столбцов таблицы. **Категориальные** столбцы на данном этапе рассматривать не надо. Для работы используйте очищенные от пропусков данные, полученные на шаге 1. На основе анализа распределений выберите стратегию обработки аномальных значений (выбросов): фильтрация, замена на типичные значения, винзоризация. Примените выбранную стратегию, очищенные данные поместите в новую таблицу, сохранив имена столбцов.
   
   3. Сравните в абсолютном и процентном выражении, как изменилось количество строк набора данных после очистки.
-# Введение
-
-Этот набор был подготовлен для конкурса по решению прикладной задачи предсказания отклика клиентов на маркетинговую кампанию в рамках всероссийской конференции «Математические методы распознавания образов» ММРО-15 (2011). Описание и результаты конкурса  размещены на ресурсе www.machinelearning.ru в разделе "Конкурсы".
-
-Данные предоставлены ОТП Банком (www.otpbank.ru), который входит в число 50 крупнейших банков России, занимает 2-е место на рынке потребительского кредитования, 3-е место на рынке беззалогового кредитования, и 4-е место на рынке кредитных карт.
-
-# Постановка задачи
-
-В этом задании вам предстоит выполнить предварительный анализ данных о клиентах банка с целью оценки их качества и выбора стратегии очистки данных. Очищенный набор данных понадобится вам в дальнейшем при выполнении другого задания.
-
-## Требуется
-  
-  1. Исследуйте данные на предмет наличия пропущенных значений. Для столбцов, содержащих пропущенные значения, предложите стратегию обработки пропусков - фильтрация, замена на типичные значения, замена на специальное значение (`неизвестно`). Примените выбранную стратегию обработки пропущенных значений (очищенные данные поместите в новую таблицу).
-  
-  2. Изучите распределения всех **количественных** столбцов таблицы. **Категориальные** столбцы на данном этапе рассматривать не надо. Для работы используйте очищенные от пропусков данные, полученные на шаге 1. На основе анализа распределений выберите стратегию обработки аномальных значений (выбросов): фильтрация, замена на типичные значения, винзоризация. Примените выбранную стратегию, очищенные данные поместите в новую таблицу, сохранив имена столбцов.
-  
-  3. Сравните в абсолютном и процентном выражении, как изменилось количество строк набора данных после очистки.
-  
-## Как сдавать
-
-Решения в формате HTML присылайте на `postlogist@gmail.com`. Ваш отчет должен быть аккуратно оформлен, иметь структуру. Свои решения по выбору стратегии очистки необходимо обосновать (пояснить). 
-
-Перед отправкой отчета на проверку, не забудьте указать свое имя в теге `author:` документа, а также убрать или отключить громоздкий вывод кодовых блоков (например, распечатку больших таблиц).
-
-Работу можно выполнять в небольших командах, не более 3 человек. Нельзя делиться готовыми ответами с другими командами.
-
-# Описание данных
-
-Исходная выборка («выборка А») содержит записи о 15 223 клиентов, классифицированных на два класса:
-1 — отклик был (1812 клиентов),
-0 — отклика не было (13411 клиентов).
-
-Данные находятся в файле: `otp_bank.xlsx`, описание переменных доступно на листе `fields`. Для удобства загрузите оба листа в R, тогда вы сможете видеть описания переменных в любой момент.
-
-
 
 # Очистка
 
 Загрузка библиотек
 ```{r Подключение пакетов, message=FALSE, warning=FALSE}
 library(tidyverse)
-library(readxl) # считывание данных в формате Excel
-library(stringr) # операции со строками
+library(readxl) 
+library(stringr) 
 ```
 
 Загрузка данных
@@ -93,17 +58,9 @@ otp_na <-  filter(otp_num, is.na(work_time)| is.na(previous_card_num_utilized))
 
 
 
-```{r Промежуточная очистка}
- # otp_clean <- mutate(otp, previous_card_num_utilized = if_else(is.na(otp$previous_card_num_utilized), 0, previous_card_num_utilized), work_time = if_else(is.na(otp$work_time), mean(!is.na(otp$work_time)), otp$work_time))
-
-
-```
-
 Фильтруем категориальные переменные
 ```{r Категориальные переменные}
 otp_cat <- select(otp, reg_address_province, fact_address_province,region_nm, agreement_rk,  postal_address_province, job_dir, gen_industry, org_tp_state, org_tp_fcapital, education,  socstatus_work_fl, socstatus_pens_fl, marital_status, gen_title, family_income, tp_province)
-
-# otp_tst <- filter(otp, is.na(reg_address_province)| is.na(fact_address_province) | is.na(region_nm) | is.na(agreement_rk) | is.na(postal_address_province) | is.na(job_dir) | is.na(gen_industry) | is.na(org_tp_state) | is.na(education) | is.na(socstatus_work_fl) | is.na(socstatus_pens_fl) | is.na(marital_status) | is.na(gen_title) | is.na(family_income) | is.na(tp_province))
 
 
       
@@ -111,6 +68,7 @@ otp_cat <- select(otp, reg_address_province, fact_address_province,region_nm, ag
 
 Поскольку данные переменные являются категориальными, допустимо заменить пропущенные значения аргументом "Неизвестно"
 
+Наконец, производим замены.
 
 ```{r Очистка значений}
 otp_clean <- mutate(otp, previous_card_num_utilized = if_else(is.na(otp$previous_card_num_utilized), 0, previous_card_num_utilized), work_time = if_else(is.na(otp$work_time), mean(!is.na(otp$work_time)), otp$work_time), reg_address_province = if_else(is.na(otp$reg_address_province), "Неизвестно", otp$reg_address_province), fact_address_province = if_else(is.na(otp$fact_address_province), "Неизвестно", otp$fact_address_province), region_nm = if_else(is.na(otp$region_nm), "Неизвестно", otp$region_nm), postal_address_province = if_else(is.na(otp$postal_address_province), "Неизвестно", otp$postal_address_province), job_dir = if_else(is.na(otp$job_dir), "Неизвестно", otp$job_dir), gen_industry = if_else(is.na(otp$gen_industry), "Неизвестно", otp$gen_industry), org_tp_state = if_else(is.na(otp$org_tp_state), "Неизвестно", otp$org_tp_state), education = if_else(is.na(otp$education), "Неизвестно", otp$education), socstatus_work_fl = if_else(is.na(otp$socstatus_work_fl), "Неизвестно", otp$socstatus_work_fl), socstatus_pens_fl = if_else(is.na(otp$socstatus_pens_fl), "Неизвестно", otp$socstatus_pens_fl), marital_status = if_else(is.na(otp$marital_status), "Неизвестно", otp$marital_status), gen_title = if_else(is.na(otp$gen_title), "Неизвестно", otp$gen_title), family_income = if_else(is.na(otp$family_income), "Неизвестно", otp$family_income), tp_province = if_else(is.na(otp$tp_province), "Неизвестно", otp$tp_province))

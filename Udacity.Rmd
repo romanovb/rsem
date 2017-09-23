@@ -1,0 +1,83 @@
+---
+title: "Задания из MOOC"
+author: "Б. Романов, М. Вотякова, Д. Пак"
+date: '23 сентября 2017 г '
+output: html_document
+toc: yes
+
+---
+
+
+# Задание 1 - Diamonds
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+data(diamonds)
+```
+
+```{r}
+dim(diamonds)
+summary(diamonds)
+
+```
+Ответы на вопросы:
+а) 53940 наблюдений
+б) 10 переменных
+в) 3 - cut, color, clarity
+г) D
+
+# Задание 2 - Price Histogram
+
+```{r}
+ggplot(data = diamonds) + geom_histogram( mapping = aes(x = price, y = ..count..), binwidth = 500)
+```
+
+# Задание 3 - Price Histogram Summary
+
+```{r}
+summary(diamonds$price)
+```
+
+Среднее значение больше медианы, центр распределения смещен в сторону более дешевых бриллиантов. 
+
+# Задание 4 Diamond counts
+
+```{r}
+
+summary(diamonds$price < 500)
+summary(diamonds$price < 250)
+summary(diamonds$price >= 15000)
+```
+
+Ответы: 
+а) 1729
+б) 0
+в) 1656
+
+# Задание 5
+
+```{r}
+ggplot(data = diamonds) + geom_histogram( mapping = aes(x = price, y = ..count..), binwidth = 500) + scale_x_continuous(limits = c(500,1500))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
