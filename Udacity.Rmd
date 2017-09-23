@@ -10,13 +10,13 @@ toc: yes
 
 # Задание 1 - Diamonds
 
-```{r}
+```{r Загрузка библиотек, данных}
 library(tidyverse)
 library(ggplot2)
 data(diamonds)
 ```
 
-```{r}
+```{r Размерность, сводка по данным}
 dim(diamonds)
 summary(diamonds)
 
@@ -29,13 +29,13 @@ summary(diamonds)
 
 # Задание 2 - Price Histogram
 
-```{r}
+```{r Гистограмма по цене}
 ggplot(data = diamonds) + geom_histogram( mapping = aes(x = price, y = ..count..), binwidth = 500)
 ```
 
 # Задание 3 - Price Histogram Summary
 
-```{r}
+```{r Сводка по цене}
 summary(diamonds$price)
 ```
 
@@ -43,7 +43,7 @@ summary(diamonds$price)
 
 # Задание 4 Diamond counts
 
-```{r}
+```{r Ценовые категории}
 
 summary(diamonds$price < 500)
 summary(diamonds$price < 250)
@@ -55,14 +55,20 @@ summary(diamonds$price >= 15000)
 б) 0
 в) 1656
 
-# Задание 5
+# Задание 5 - Cheaper Diamonds
 
-```{r}
+```{r Исследование наибольшего столбца гистограммы}
 ggplot(data = diamonds) + geom_histogram( mapping = aes(x = price, y = ..count..), binwidth = 500) + scale_x_continuous(limits = c(500,1500))
 
+ggplot(data = diamonds) + geom_histogram( mapping = aes(x = price, y = ..count..), binwidth = 200) + scale_x_continuous(limits = c(500,1500))
 ```
 
 
+# Задание 6 - Price by Cut Histograms
+
+```{r}
+
+```
 
 
 
