@@ -3,7 +3,7 @@ title: "Задания из MOOC"
 author: "Б. Романов, М. Вотякова, Д. Пак"
 date: '23 сентября 2017 г '
 output: html_document
-toc: yes
+toc: 'yes'
 
 ---
 
@@ -21,7 +21,8 @@ dim(diamonds)
 summary(diamonds)
 
 ```
-Ответы на вопросы:
+
+## Ответы на вопросы:
 а) 53940 наблюдений
 б) 10 переменных
 в) 3 - cut, color, clarity
@@ -50,7 +51,7 @@ summary(diamonds$price < 250)
 summary(diamonds$price >= 15000)
 ```
 
-Ответы: 
+## Ответы: 
 а) 1729
 б) 0
 в) 1656
@@ -67,23 +68,106 @@ ggplot(data = diamonds) + geom_histogram( mapping = aes(x = price, y = ..count..
 # Задание 6 - Price by Cut Histograms
 
 ```{r}
+ggplot(data = diamonds) + geom_histogram(mapping = aes(x= price, y = ..count..), bins = 300)  + facet_wrap( ~ cut, ncol=1)
+```
 
+
+# Задание 7 - Price by Cut 
+
+
+```{r}
+by (diamonds$price, diamonds$cut, summary)
+
+
+```
+
+## Ответы на вопросы:
+а) Premium
+b) Premium, Ideal
+c) Ideal
+
+# Задание 8 - Scales
+
+```{r}
+ggplot(data = diamonds) + geom_histogram(mapping = aes(x= price, y = ..count..), bins = 300)  + facet_wrap( ~ cut, ncol=1, scales = 'free_y')
 ```
 
 
 
+# Задание 9 - Price per Carat and Cut
+
+```{r}
+diamonds$ppc <- diamonds$price/diamonds$carat
 
 
+ggplot(data = diamonds) + geom_histogram(mapping = aes(x=ppc, y = ..count..), binwidth = 0.1) + scale_x_log10() + facet_wrap(~ cut)
+```
 
 
+# Задание 10 -  Price Box Plots
+
+```{r}
+by (diamonds$carat, diamonds$clarity, summary)
+ggplot(data = diamonds) + geom_boxplot(mapping = aes(x=clarity, y= carat)) + coord_flip()
 
 
+```
+
+# IQR
 
 
+```{r}
+by(diamonds$price, diamonds$color, summary)
+IQR(subset(diamonds, color == "D")$price)
+IQR(subset(diamonds, color == "J")$price)
+?subset
+```
+
+## Ответы на вопросы:
+a) first qu. = 911
+   3rd qu. = 4214
+b) first qu. = 1860
+   3rd qu. = 7695
+c) IQR (best color) = 3302
+d) IQR (worst color) = 5834.5
+
+# Задание 12 - Price per Carat Box Plots by Color
 
 
+```{r}
+ggplot(data= diamonds) + geom_boxplot(mapping = aes(x = color, y = ppc))
+```
 
 
+# Задание 13 - Carat Frequency Polygon
+
+```{r}
+ggplot(data = diamonds) + geom_freqpoly(mapping = aes(x = carat, y = ..count..), binwidth =0.06)
+ggplot(data = diamonds) + geom_freqpoly(mapping = aes(x = carat, y = ..count..), binwidth =0.05) + scale_x_continuous(breaks = seq(0, 8, by = 0.1), limits = c(0,3))
+```
+
+## Ответы на вопросы
+
+Из предложенных более 2000 раз встречаются бриллианты весом 0.3 и 1.01 карат.
+
+# Задание 15 Gapminder data
+
+```{r}
+library(readxl)
+library(stringr)
+hiv <- read_xlsx(path = 'hiv.xlsx', sheet = "frame")
+head(hiv)
+names(hiv) <- str_to_lower(names(hiv))
+hiv <- as.data.frame(sapply(hiv, as.numeric))
+hivc <- filter(hiv, country > 1989)
+ggplot(data=hivc) + geom_freqpoly(mapping = aes(x= bahamas, y = ..count.., color = "bahamas")) + geom_freqpoly(mapping = aes(x = barbados, y = ..count.., color = "barbados")) + labs(x = "Значение показателя", color = "Страна")
+
+```
+
+
+На Багамских островах процент зараженных HIV выше, чем в Барбадосе.
+
+# Задание 16 - Friends Birthdays
 
 
 
