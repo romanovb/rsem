@@ -2,8 +2,10 @@
 title: "Задания из MOOC"
 author: "Б. Романов, М. Вотякова, Д. Пак"
 date: '23 сентября 2017 г '
-output: html_document
-toc: true
+output: 
+  html_document:
+   toc: true
+   toc_float: true
 
 ---
 
@@ -149,24 +151,8 @@ ggplot(data = diamonds) + geom_freqpoly(mapping = aes(x = carat, y = ..count..),
 
 Из предложенных более 2000 раз встречаются бриллианты весом 0.3 и 1.01 карат.
 
-# Задание 15 Gapminder data
-
-```{r}
-library(readxl)
-library(stringr)
-hiv <- read_xlsx(path = 'hiv.xlsx', sheet = "frame")
-head(hiv)
-names(hiv) <- str_to_lower(names(hiv))
-hiv <- as.data.frame(sapply(hiv, as.numeric))
-hivc <- filter(hiv, country > 1989)
-ggplot(data=hivc) + geom_freqpoly(mapping = aes(x= bahamas, y = ..count.., color = "bahamas")) + geom_freqpoly(mapping = aes(x = barbados, y = ..count.., color = "barbados")) + labs(x = "Значение показателя", color = "Страна")
-
-```
 
 
-На Багамских островах процент зараженных HIV выше, чем в Барбадосе.
-
-# Задание 16 - Friends Birthdays
 
 
 
