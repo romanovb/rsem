@@ -75,3 +75,301 @@ otp_clean <- mutate(otp, previous_card_num_utilized = if_else(is.na(otp$previous
 
 ```
 
+# Изучение всех количественных столбцов таблицы
+Для работы будем использовать очищенные от пропусков данные, полученные на шаге 
+
+На основе анализа распределений нами была выбрана следующая стратегия обработки аномальных значений: винзоризация. Поскольку этот метод в отличие, например, от фильтрации не будет приводить к большой потере данных.
+
+Для того чтобы понять,какие количественные переменные нужно винзоризировать, построим ящичные диаграммы для каждой переменной.
+
+# Возраст клиента (ящичная диаграмма)
+```{r Распределение переменной возраст клиента}
+# Сводка
+summary(otp_clean$age)
+
+# Ящичная диаграмма
+qplot(x = "", y = age, data = otp_clean, 
+      geom = 'boxplot',
+      main = 'Распределение возрастов',
+      ylab = 'гг',
+      xlab = NULL)
+```
+Как мы видим, выбросов переменной "возраст клиента" нет, поэтому можно не винзоризировать значения для данной переменной.
+
+Перейдем к следующей переменной.
+
+# Личный доход клиента (ящичная диаграмма)
+```{r Распределение переменной "личный доход клиента (в рублях)"}
+# Сводка
+summary(otp_clean$personal_income)
+
+# Ящичная диаграмма
+qplot(x = "", y = personal_income, data = otp_clean, 
+      geom = 'boxplot',
+      main = 'Распределение личного дохода клиентов',
+      ylab = 'руб',
+      xlab = NULL)
+```
+Выбросов достаточно много, поэтому будем винзоризировать переменную 'личный доход клиента (в рублях)'.
+
+#Сумма последнего кредита клиента (ящичная диагамма)
+```{r Распределение переменной 'сумма последнего кредита клиента (в рублях)'}
+# Сводка
+summary(otp_clean$credit)
+
+# Ящичная диаграмма
+qplot(x = "", y = credit, data = otp_clean, 
+      geom = 'boxplot',
+      main = 'Распределение суммы последнего кредита клиента',
+      ylab = 'руб',
+      xlab = NULL)
+```
+Выбросов достаточно много, поэтому будем винзоризировать переменную 'сумма последнего кредита клиента (в рублях)'.
+
+# Первоначальный взнос  (ящичная диаграмма)
+
+```{r Распределение переменной 'первоначальный взнос (в рублях)'}
+# Сводка
+summary(otp_clean$fst_payment)
+
+# Ящичная диаграмма
+qplot(x = "", y = fst_payment, data = otp_clean, 
+      geom = 'boxplot',
+      main = 'Распределение первоначального взноса (в рублях)',
+      ylab = 'руб',
+      xlab = NULL)
+```
+Выбросов достаточно много, поэтому будем винзоризировать переменную 'первоначальный взнос (в рублях)'.
+
+
+
+# Средняя сумма просрочки (ящичная диаграмма)
+
+```{r Распределение переменной 'средняя сумма просрочки (в рублях)'}
+# Сводка
+summary(otp_clean$loan_avg_dlq_amt)
+
+# Ящичная диаграмма
+qplot(x = "", y = loan_avg_dlq_amt, data = otp_clean, 
+      geom = 'boxplot',
+      main = 'Распределение средней суммы просрочки (в рублях)',
+      ylab = 'руб',
+      xlab = NULL)
+```
+Выбросов достаточно много, поэтому будем винзоризировать переменную 'средняя сумма просрочки (в рублях)'.
+
+# Винзоризация 
+
+#Винзоризация переменной 'личный доход клиента (в рублях)'
+
+```{r Расчет границ для личного дохода клиента }
+# Нижняя граница - квантиль 3%
+min_personal_income <- 
+  quantile(otp_clean$personal_income, probs = 0.05, na.rm = TRUE)
+
+# Верхняя граница - квантиль 97%
+max_personal_income <-
+  quantile(otp_clean$personal_income, probs = 0.95, na.rm = TRUE)
+
+min_personal_income
+max_personal_income
+
+```
+
+Создадим новую таблицу данных с очищенными значениями переменной `personal_income`:
+
+```{r Винзоризация данных о возрасте}
+otp_clean_personal_income <- 
+  mutate(otp_clean,
+         personal_income = 
+           ifelse(personal_income > max_personal_income, max_personal_income,
+                  ifelse(personal_income < min_personal_income, min_personal_income, personal_income)))  
+```
+
+Сравним исходную и очищенную переменные:
+
+```{r Распределение переменной 'личный доход клиента (в рублях)'}
+# Сводка
+summary(otp_clean$personal_income)
+
+# Ящичная диаграмма
+qplot(x = "", y = personal_income, data = otp_clean, 
+      geom = 'boxplot',
+      main = 'Распределение личного дохода клиентов',
+      ylab = 'руб',
+      xlab = NULL)
+```
+
+```{r Распределение очищенной переменной}
+# Сводка
+summary(otp_clean_personal_income$personal_income)
+
+# Ящичная диаграмма
+qplot(x = "", y = personal_income, data = otp_clean_personal_income, 
+      geom = 'boxplot',
+      main = 'Распределение личного дохода клиентов',
+      ylab = 'руб',
+      xlab = NULL)
+```
+Как мы видим, на полученной ящичной диаграмме ярко выделяющихся выбросов нет.
+
+#Винзоризация переменной 'сумма последнего кредита клиента (в рублях)'
+
+```{r Расчет границ для суммы последнего кредита }
+# Нижняя граница - квантиль 30%
+min_credit <- 
+  quantile(otp_clean$credit, probs = 0.05, na.rm = TRUE)
+
+# Верхняя граница - квантиль 90%
+max_credit <-
+  quantile(otp_clean$credit, probs = 0.95, na.rm = TRUE)
+
+min_credit
+max_credit
+
+```
+
+Создадим новую таблицу данных с очищенными значениями переменной `credit`:
+
+```{r Винзоризация данных о сумме последнего кредита}
+otp_clean_credit <- 
+  mutate(otp_clean,
+         credit = 
+           ifelse(credit > max_credit, credit,
+                  ifelse(credit < min_credit, min_credit, credit)))  
+```
+
+Сравним исходную и очищенную переменные:
+
+```{r Распределение переменной 'сумма последнего кредита клиента (в рублях)'}
+# Сводка
+summary(otp_clean$credit)
+
+# Ящичная диаграмма
+qplot(x = "", y = credit, data = otp_clean, 
+      geom = 'boxplot',
+      main = 'Распределение суммы последнего кредита клиента',
+      ylab = 'руб',
+      xlab = NULL)
+```
+
+```{r Распределение очищенной переменной}
+# Сводка
+summary(otp_clean_credit$credit)
+
+# Ящичная диаграмма
+qplot(x = "", y = credit, data = otp_clean_credit, 
+      geom = 'boxplot',
+      main = 'Распределение суммы последнего кредита клиента',
+      ylab = 'руб',
+      xlab = NULL)
+```
+
+#Винзоризация переменной 'первоначальный взнос (в рублях)'
+
+```{r Винзоризация первоначального взноса }
+# Нижняя граница - квантиль 3%
+min_fst_payment <- 
+  quantile(otp_clean$fst_payment, probs = 0.05, na.rm = TRUE)
+
+# Верхняя граница - квантиль 75%
+max_fst_payment <-
+  quantile(otp_clean$fst_payment, probs = 0.85, na.rm = TRUE)
+
+min_fst_payment
+max_fst_payment
+
+```
+
+Создадим новую таблицу данных с очищенными значениями переменной `fst_payment`:
+
+```{r Винзоризация данных о первоначальном взносе}
+otp_clean_fst_payment <- 
+  mutate(otp_clean,
+         fst_payment = 
+           ifelse(fst_payment > max_fst_payment, max_fst_payment,
+                  ifelse(fst_payment < min_fst_payment, min_fst_payment, fst_payment)))
+
+```                 
+
+Сравним исходную и очищенную переменные:
+
+```{r Распределение переменной 'первоначальный взнос (в рублях)'}
+# Сводка
+summary(otp_clean$fst_payment)
+
+# Ящичная диаграмма
+qplot(x = "", y = fst_payment, data = otp_clean, 
+      geom = 'boxplot',
+      main = 'Распределение первоначального взноса (в рублях)',
+      ylab = 'руб',
+      xlab = NULL)
+```
+
+```{r Распределение очищенной переменной}
+# Сводка
+summary(otp_clean_fst_payment$personal_income)
+
+# Ящичная диаграмма
+qplot(x = "", y = fst_payment, data = otp_clean_fst_payment,
+      geom = 'boxplot',
+      main = 'Распределение первоначального взноса (в рублях)',
+      ylab = 'руб',
+      xlab = NULL)
+```
+
+Заметим, что резкие выбросы исчезли с ящичной диагаммы.
+
+# Винзоризация переменной 'средняя сумма просрочки (в рублях)'
+
+```{r Расчет границ для средней суммы просрочки }
+# Нижняя граница - квантиль 10%
+min_loan_avg_dlq_amt <- 
+  quantile(otp_clean$loan_avg_dlq_amt, probs = 0.03, na.rm = TRUE)
+
+# Верхняя граница - квантиль 80%
+max_loan_avg_dlq_amt <-
+  quantile(otp_clean$loan_avg_dlq_amt, probs = 0.75, na.rm = TRUE)
+
+min_loan_avg_dlq_amt
+max_loan_avg_dlq_amt
+
+```
+
+Создадим новую таблицу данных с очищенными значениями переменной `loan_avg_dlq_amt`:
+
+```{r Винзоризация данных о средней сумме просрочки}
+otp_clean_loan_avg_dlq_amt <- 
+  mutate(otp_clean,
+         loan_avg_dlq_amt = 
+           ifelse(loan_avg_dlq_amt > max_loan_avg_dlq_amt, max_loan_avg_dlq_amt,
+                  ifelse(loan_avg_dlq_amt < min_loan_avg_dlq_amt, min_loan_avg_dlq_amt, loan_avg_dlq_amt)))  
+```
+
+Сравним исходную и очищенную переменные:
+
+```{r Распределение переменной 'средняя сумма просрочки'}
+# Сводка
+summary(otp_clean$loan_avg_dlq_amt)
+
+# Ящичная диаграмма
+qplot(x = "", y = loan_avg_dlq_amt, data = otp_clean, 
+      geom = 'boxplot',
+      main = 'Распределение средней суммы просрочки',
+      ylab = 'руб',
+      xlab = NULL)
+library(ggplot2)
+ggplot(data=otp_clean) + geom_histogram(mapping=aes(x=loan_avg_dlq_amt, y = ..count..))
+```
+
+```{r Распределение очищенной переменной}
+# Сводка
+summary(otp_clean_loan_avg_dlq_amt$loan_avg_dlq_amt)
+
+# Ящичная диаграмма
+qplot(x = "", y = loan_avg_dlq_amt, data = otp_clean_loan_avg_dlq_amt, 
+      geom = 'boxplot',
+      main = 'Распределение средней суммы просрочки',
+      ylab = 'руб',
+      xlab = NULL)
+```
