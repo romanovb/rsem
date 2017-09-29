@@ -332,8 +332,13 @@ ggplot(data = mpg) +
 Какой вариант связывания переменных с эстетиками, на ваш взгляд, более информативен?
 
 ```{r Упражнение - связь двух категориальных переменных}
-#ggplot(data = diamonds) +
-  #geom_bar(...)
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = 'fill') +
+  scale_y_continuous(labels = scales::percent)
+
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = clarity, fill = cut), position = 'fill') +
+  scale_y_continuous(labels = scales::percent)
 ```
 
 
@@ -504,7 +509,8 @@ ggplot(data = mpg,
 ```{r Упражнение - сортировка категорий по числовому показателю}
 
 # Напишите здесь свой код
-
+ggplot(data = diamonds, mapping = aes(x = fct_reorder(cut, price,  fun = median, .desc = TRUE), y = price)) +
+  stat_summary( fun.y = 'median', geom = 'bar')
 
 ```
 
