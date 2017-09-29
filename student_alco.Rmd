@@ -1,6 +1,6 @@
 ---
 title: "Анализ данных об употреблении алкоголя школьниками"
-author: <Ваше имя здесь>
+author: Б. Романов, М. Вотякова, Д. Пак
 output:
   html_document:
     toc: true
@@ -98,7 +98,7 @@ output:
 library (tidyverse)
 library(readxl)
 library(scales)
-stud <- read_excel('student-mat.xlsx')
+std <- read_excel('student-mat.xlsx')
 ```
 
 ## Вопрос 1: Можем ли анализировать данные об учениках двух школ совместно?
@@ -109,14 +109,19 @@ stud <- read_excel('student-mat.xlsx')
 
 ```{r Посчитайте наблюдения в каждой школе}
 # Ваш код здесь
-ggplot(data = stud) +
-  geom_bar(mapping = aes(x = school, y = ..count..))
+ggplot(data = std) +
+  geom_bar(mapping = aes(x = school, y = ..count..)) +
+  labs(
+    title = "Количество наблюдений по школам",
+    x = "Школы",
+    y = "Количество наблюдений"
+  )
 
-gp <- filter(stud, school == 'Gabriel Pereira')
-mds <- filter(stud, school == 'Mousinho da Silveira')
+gp <- filter(std, school == 'Gabriel Pereira')
+mds <- filter(std, school == 'Mousinho da Silveira')
 
-str(gp)
-str(mds)
+dim(gp)
+dim(mds)
 ```
 
 **Вывод:** Большую часть выборки - 349 наблюдений - составляют данные из школы Gabriel Pereira, оставшиеся 46 наблюдений получены из школы Mousinho da Silveira.
@@ -125,29 +130,52 @@ str(mds)
 
 ```{r Сравните возрастные распределения}
 # Ваш код здесь
-
+ggplot(data = std) +
+  geom_histogram(mapping = aes(x=age, y = ..count..), binwidth =  1) +
+  facet_wrap(~school) +
+  labs(
+    title = "Возрастные распределения",
+    x = "Возраст",
+    y = "Частота"
+  )
 ```
 
-**Вывод:** ...
+**Вывод:** В школе Gabriel Pereira (GP) более молодые ученики - преобладают ученики 15-17 лет, в то время как в школе Mousinho da Silveira (MDS) преобладают 18-ти летние ученики.
 
 
 ### Каковы соотношения количества девочек и мальчиков в этих двух школах?
 
 ```{r Соотношение полов}
 # Ваш код здесь
-
+ggplot(std) +
+  geom_bar(aes(x=school, fill = sex), position = 'fill') +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Соотношение полов",
+    x = "Школа",
+    y = "Соотношение",
+    fill = "Пол"
+  )
 ```
 
-**Вывод:** ...
+**Вывод:** В обеих школах примерно равный гендерный состав.
 
 ### Каковы соотношения учащихся из городских и сельских районов в этих двух школах?
 
 ```{r Соотношение сельских и городских жителей}
 # Ваш код здесь
-
+ggplot(std) +
+  geom_bar(aes(x=school, fill = address), position = 'fill') +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Соотношение полов",
+    x = "Школа",
+    y = "Соотношение",
+    fill = "Район"
+  )
 ```
 
-**Вывод:** ...
+**Вывод:** В школе GP преобладают ученики, проживающие в городских районах, а в школе MDS примерно поровну, хотя учеников из сельских районов все-таки немного больше.
 
 ### Похожи ли размеры семей в этих школах?
 
