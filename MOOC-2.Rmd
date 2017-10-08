@@ -1,0 +1,7 @@
+---
+title: "MOOC Problem set 2"
+author: "Б. Романов, М. Вотякова, Д. Пак"
+date: '8 октября 2017 г '
+output: html_document
+---
+
