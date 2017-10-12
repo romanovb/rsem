@@ -58,18 +58,57 @@ ggplot(subset(diamonds, volume < quantile(volume, 0.99))) +
 ```{r}
 pf <- read.delim("pseudo_facebook.tsv")
 
-head (mutate(pf, prop_initiated = friendships_initiated/friend_count))
+pf$prop_initiated <- pf$friendships_initiated / ifelse(pf$friend_count>0, pf$friend_count, 1)
 
 # pf$prop_initiated <- pf$friendships_initiated / pf$friend_count
 ```
 
 
+# Задание 6
+
+```{r}
+pf$year_joined <- 2014-ceiling(pf$tenure/365)
+pf$year_joined.bucket <- cut(pf$year_joined, breaks=c(2004,2009,2011,2012,2014), right=TRUE)
+
+ggplot(pf) +
+  geom_line(mapping = aes(x=tenure, y = prop_initiated, color = year_joined.bucket), stat = "summary", fun.y = median, na.rm = TRUE)
 
 
+```
 
 
+# Задание 7 
+
+```{r}
+ggplot(pf, aes(x=tenure, y=prop_initiated, color=year_joined.bucket)) +
+  geom_smooth(na.rm=TRUE)
+```
 
 
+# Задание 8
+
+Наибольшее соотношение имеет группа (2012, 2014] =>
+ответ: People who joined after 2012.
+
+# Задание 9
+
+```{r}
+
+ pf1 <- filter(pf, year_joined.bucket == "(2012,2014]", !is.na(prop_initiated))
+  mean(pf1$prop_initiated)
+```
+
+Такое соотношение вызвано тем, что люди присоединялись в расцвете социальной сети и в момент "тренда" на "популярность" в социальных сетях.
+
+# Задание 10
+
+```{r}
+ggplot(diamonds, aes(x=cut, y=price/carat, color=color)) +
+  geom_point(position=position_jitter(), alpha=0.3) + 
+  facet_wrap(~clarity) +
+  scale_color_brewer(type='div') +
+  theme_bw()
+```
 
 
 
