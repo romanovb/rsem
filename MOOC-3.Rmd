@@ -42,7 +42,7 @@ ggplot(diamonds) +
 # Задание 4
 
 ```{r}
-head(mutate(diamonds, volume = x * y * z))
+diamonds$volume = diamonds$x * diamonds$y * diamonds$z
 
 ggplot(subset(diamonds, volume < quantile(volume, 0.99))) +
   geom_point(mapping = aes (x = volume, y = price, color = clarity)) +
