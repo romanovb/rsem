@@ -97,9 +97,7 @@ ggplot(data = diamonds, aes(x = price, y = volume)) +
 
 ## Задание 10 - Findings - price vs. volume
 
-```{r Findings - price vs. volume}
-
-```
+Подавляющее большинство бриллиантов имеют объем не более 500. В редких случаях - объем не превышает 1000. Имеется один выброс и два нетипичных значения.
 
 ## Задание 11 price vs volume correlation
 
