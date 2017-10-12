@@ -1,0 +1,43 @@
+---
+title: "MOOC - 3"
+author: "Б. Романов, М. Вотякова, Д. Пак"
+date: '12 октября 2017 г '
+output: html_document
+---
+
+
+```{r Библиотеки}
+
+library(tidyverse)
+data(diamonds)
+head (diamonds)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
