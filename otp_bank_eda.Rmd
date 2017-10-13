@@ -1,6 +1,6 @@
 ---
 title: "Анализ клиентской базы ОТП-банка"
-author: "<ваше имя>"
+author: "Б. Романов, М. Вотякова, Д. Пак"
 output: 
   html_document: 
     toc: yes
