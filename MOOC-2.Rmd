@@ -101,13 +101,13 @@ ggplot(data = diamonds, aes(x = price, y = volume)) +
 
 ## Задание 11 price vs volume correlation
 
-```{r price vs volume}
+```{r price vs volume corr}
 with(subset(diamonds, (volume > 0) & (volume <= 800)),cor.test(volume,price))
 ```
 
 ## Задание 12 Adjustments - price vs. volume
 
-```{r price vs volume}
+```{r price vs volume adj}
 p1 <- ggplot(data = subset(diamonds, (volume > 0) & (volume <= 800)),
        aes(x = volume, y = price)) +
   geom_point() 
@@ -129,7 +129,7 @@ grid.arrange(p2,p3,p4,p5,ncol =2)
 
 ## Задание 13 Mean Price by Clarity
 
-```{r price vs volume}
+```{r mean price}
 diamondsByClarity <- diamonds %>%
   group_by(clarity) %>%
   summarise(mean_price = mean(price), 
@@ -142,7 +142,7 @@ diamondsByClarity
 
 ## Задание 14 Bar Charts of Mean Price
 
-```{r price vs volume}
+```{r bar charts}
 diamonds_by_clarity <- group_by(diamonds, clarity)
 diamonds_mp_by_clarity <- summarise(diamonds_by_clarity, mean_price = mean(price))
 
