@@ -36,6 +36,9 @@ table5
 
 **Вопрос:** В каком из представлений легче всего рассчитать в R относительную частоту заболевания - число случаев на 10000 жителей?
 
+```{r}
+head(mutate(table1, rate = cases/population * 10000))
+```
 
 Наиболее удобно представление данных, в котором:
 
@@ -155,6 +158,8 @@ sales <- tibble(
 sales
 
 # Напишите свой код здесь
+sal <- gather(sales, moscow, `st-petersburg`, novosibirsk, total, key = "city", value = "cases")
+filter(sal, city != "total")
 ```
 
 ## Развертка строк в столбцы с помощью функции `spread()`
@@ -198,6 +203,10 @@ grades <- tribble(
 grades
 
 # Напишите свой код здесь
+grades %>% 
+  group_by(name, subject) %>%
+  summarise(arade = last(grade)) 
+  spread (grades, key = subject, value = grade)
 ```
 
 ## Разделение значений столбца с помощью функции `separate()`
