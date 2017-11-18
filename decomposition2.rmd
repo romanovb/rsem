@@ -1,3 +1,4 @@
+
 ---
 title: "Исследование временных рядов макроэкономических показателей российской экономики"
 author: "Б. Романов, Д.Пак, М. Вотякова"
@@ -177,7 +178,8 @@ autoplot(remainder(rtrd_stl), series = 'RTRD') +
 
 **Сезонно-скорректированные ряды**
 
-Какая из отраслей быстрее всего реагирует на кризис? 
+Какая из отраслей быстрее всего реагирует на кризис?   
+
 ** Розничная торговля**
 
 Для какой из отраслей этот эффект наиболее выраженный?
@@ -208,7 +210,7 @@ autoplot(BoxCox(rtrd_1, best_rtrd)) +
     labs(title = "CEA",
          x = NULL, y = NULL)
   autoplot(BoxCox(dea, best_dea)) +
-    labs(title = "CEA",
+    labs(title = "DEA",
          x = NULL, y = NULL)
   
   rtrdbox <- BoxCox(rtrd_1, best_rtrd)
