@@ -45,6 +45,9 @@ library(fpp) # Примеры временных рядов
 library(sophisthse) # Загрузка временных рядов из базы Sophist
 ```
 
+
+## Загрузка данных
+
 ```{r}
 wag <- sophisthse('WAG_M')
 # sophisthse_metadata(wag)
@@ -52,7 +55,7 @@ wag <- sophisthse('WAG_M')
 wag <- wag[,1]
 ```
 
-
+## Создание тестового и обучающего периода
 
 ```{r}
 autoplot(wag)
@@ -61,6 +64,8 @@ wagt <- wag %>% window(start = c(2016, 11), end = c(2017, 10) )
 wagl <- wag %>% window(start = 1993, end = c(2016, 10))
 
 ```
+
+## Создание модели прогноза
 
 ```{r}
 wag_m <- meanf(wagl, h = 12)
@@ -82,8 +87,11 @@ autoplot(window(wagl, start = 2014), series = "Обучающий период")
   autolayer(wag_d, PI = F, series = "Дрифт") 
 ```
 
+
+## Сравнение ошибок
+
 ```{r}
-rbind(accuracy(wag_m, wag)[2,], # ошибки в тестовом периоде - 2 строка
+rbind(accuracy(wag_m, wag)[2,], 
       accuracy(wag_n, wag)[2,],
       accuracy(wag_sn, wag)[2,],
       accuracy(wag_d, wag)[2,]) %>%
@@ -95,4 +103,37 @@ rbind(accuracy(wag_m, wag)[2,], # ошибки в тестовом период�
   arrange(MASE)
 
 ```
+
+
+## Метод скользящего контроля
+
+```{r}
+RMSE <- function(errors) {
+  errors^2 %>% mean(na.rm = T) %>% sqrt()
+}
+
+```
+
+```{r}
+wag %>% tsCV(meanf, h = 12) %>% RMSE() %>% round(1)
+wag %>% tsCV(naive, h = 12) %>% RMSE() %>% round(1)
+wag %>% tsCV(snaive, h = 12) %>% RMSE() %>% round(1)
+wag %>% tsCV(rwf, drift = T, h = 12) %>% RMSE() %>% round(1)
+
+```
+
+
+```{r}
+wag_err <- tibble(horizon = 1:12) %>%
+   mutate(error = map_dbl(horizon, 
+                         function(x) tsCV(wag, naive, h = x) %>% RMSE()))
+ggplot(wag_err, aes(horizon, error)) +
+  geom_line() +
+  labs(title = "RMSE", y = "", x = "") +
+  scale_x_continuous(breaks = wag_err$horizon)
+```
+
+
+
+
 
