@@ -61,7 +61,7 @@ wag <- wag[,1]
 autoplot(wag)
 
 wagt <- wag %>% window(start = c(2016, 11), end = c(2017, 10) )
-wagl <- wag %>% window(start = 1993, end = c(2016, 10))
+wagl <- wag %>% window(start = 2010.1, end = c(2016, 10))
 
 ```
 
