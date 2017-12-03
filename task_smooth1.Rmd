@@ -95,6 +95,42 @@ autoplot(trp) +
 ### Выбор модели
 
 ```{r}
+trph <- holt(trp, h = 24)
 
+trpw <- hw(trp, h = 24, type = "additive")
+
+autoplot(trp) +
+  autolayer(trph, PI = F) +
+  autolayer(trpw, PI = F)
+
+```
+
+### Ограничения
+Поскольку при погнозированние в данном временном ряде нам важна сезонность, выбираем метод Винтерса. 
+Исторические данные не нуждаются в ограничении, поскольку сходны по своей структуре и движению тренда на всем временном ряде.
+
+### Ex-Post
+
+
+```{r}
+
+tr <- window(trp, end = c(2016, 9))
+
+tr_ad <- hw(tr, h = 12, type = "additive")
+tr_mu <- hw(tr, h = 12, type = "multiplicative")
+
+autoplot(window(trp, start = 2016.10), series = "Факт") +
+  autolayer(tr_ad$mean, series = "Аддитивная") +
+  autolayer(tr_mu$mean, series = "Мультплик.")
+
+rbind(
+  accuracy(tr_ad, trp)['Test set',],
+  accuracy(tr_mu, trp)['Test set',]) %>%
+  as_tibble() %>%
+  round(4) %>%
+  mutate(`Метод` = c('Аддитивная модель', 
+                     'Мультипликативная модель')) %>%
+  select(`Метод`, MASE, MAPE, MPE) %>%
+  arrange(MASE)
 ```
 
