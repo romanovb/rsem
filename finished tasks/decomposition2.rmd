@@ -1,0 +1,263 @@
+
+---
+title: "Исследование временных рядов макроэкономических показателей российской экономики"
+author: "Б. Романов, Д.Пак, М. Вотякова"
+output: html_document 
+   
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Задание
+
+
+**1. Загрузите экономические показатели из базы Sophist**
+
+Используя пакет `sophisthse`, загрузите данные по следующим показателям:
+ - Индекс производства С. Добыча полезных ископаемых (IP_CEA_M)
+ - Индекс производства D. Обрабатывающие производства (IP_DEA_M) 
+ - Индекс реального оборота розничной торговли (RTRD_M_DIRI)
+ 
+```{r, message=FALSE, warning=FALSE}
+library(forecast)
+library(sophisthse)
+library(tidyverse)
+library(stringr)
+library(gridExtra)
+
+```
+
+```{r}
+cea <- sophisthse("IP_CEA_M")
+dea <- sophisthse("IP_DEA_M")
+rtrd <- sophisthse("RTRD_M_DIRI")
+```
+
+
+
+ 
+**2. Приведите показатели к одному базису**
+
+
+```{r}
+rtrd <- rtrd[ , "RTRD_M_DIRI"]
+head(rtrd)
+
+cea <- cea[, "IP_CEA_M"]
+head(cea)
+
+dea <- dea[, "IP_DEA_M"]
+head(dea)
+```
+
+```{r}
+rtrd_c <- window(rtrd, start = c(2002, 1))
+head(rtrd_c)
+```
+
+
+```{r}
+# rtrd_1 <- rtrd_c/1.148
+rtrd_1 <- rtrd_c/as.numeric((window(rtrd_c, 2002, c(2002, 1))/100))
+head(rtrd_1)
+
+```
+
+```{r}
+autoplot(cea)
+```
+
+
+
+**3. Визуализация показателей**
+
+Постройте график, отображающий динамику показателей
+
+```{r}
+autoplot(cea, series = "Добыча полезных ископаемых") +
+  autolayer(dea, series = "Обрабатывающие производства") +
+  autolayer(rtrd_1, series = "Оборот розничной торговли") 
+```
+
+Присутствуют ежегодные сезонные колебания.
+
+**4. Сезонная декомпозиция**
+
+Выполните сезонную декомпозицию рядов, используя метод STL с изменяющимися сезонными коэффициентами. Ширину окна сглаживания подберите таким образом, чтобы в остатках ряда не было заметно сезонных колебаний.
+
+
+
+```{r}
+
+p1 <-  autoplot(remainder(stl(rtrd_1, s.window = 7)))
+p2 <-  autoplot(remainder(stl(rtrd_1, s.window = 13)))
+p3 <-  autoplot(remainder(stl(rtrd_1, s.window = 17)))
+p4 <-  autoplot(remainder(stl(rtrd_1, s.window = 25)))
+p5 <-  autoplot(remainder(stl(rtrd_1, s.window = 'periodic')))
+
+grid.arrange(p1, p2, p3, p4, p5, ncol = 2)
+```
+
+Для данного ряда подходит значение 7.
+
+```{r}
+
+c1 <-  autoplot(remainder(stl(cea, s.window = 7)))
+c2 <-  autoplot(remainder(stl(cea, s.window = 13)))
+c3 <-  autoplot(remainder(stl(cea, s.window = 17)))
+c4 <-  autoplot(remainder(stl(cea, s.window = 25)))
+c5 <-  autoplot(remainder(stl(cea, s.window = 'periodic')))
+
+grid.arrange(c1, c2, c3, c4, c5, ncol = 2)
+```
+
+Для данного ряда подходит значение 9 
+
+```{r}
+
+d1 <-  autoplot(remainder(stl(dea, s.window = 7)))
+d2 <-  autoplot(remainder(stl(dea, s.window = 13)))
+d3 <-  autoplot(remainder(stl(dea, s.window = 17)))
+d4 <-  autoplot(remainder(stl(dea, s.window = 25)))
+d5 <-  autoplot(remainder(stl(dea, s.window = 'periodic')))
+
+grid.arrange(d1, d2, d3, d4, d5, ncol = 2)
+```
+
+Для данного ряда подходит значение 13.
+
+```{r}
+rtrd_stl <- stl(rtrd_1, s.window = 7)
+
+
+cea_stl <- stl(cea, s.window = 9)
+
+dea_stl <-stl(dea, s.window = 13)
+```
+
+
+
+**5. Сравнение динамики показателей**
+
+Постройте график, на котором сравнивается динамика сезонно-скорректированных показателей.
+
+```{r}
+autoplot(seasadj(rtrd_stl), series = 'RTRD') +
+  autolayer(seasadj(cea_stl), series = 'CEA') +
+  autolayer(seasadj(dea_stl), series = "DEA") +
+  labs (title = "Сравнение сез.-корр. показателей", y = "Значение", color = "Ряды")
+
+```
+
+
+Постройте график, на котором сравниваются тренды показателей
+
+```{r}
+autoplot(trendcycle(rtrd_stl), series = 'RTRD') +
+  autolayer(trendcycle(cea_stl), series = 'CEA') +
+  autolayer(trendcycle(dea_stl), series = "DEA") +
+  labs (title = "Сравнение трендов", y = "Значение", color = "Ряды")
+
+```
+
+
+Постройте график, на котором сравниваются нерегулярные компоненты показателей
+
+```{r}
+autoplot(remainder(rtrd_stl), series = 'RTRD') +
+  autolayer(remainder(cea_stl), series = 'CEA') +
+  autolayer(remainder(dea_stl), series = "DEA") +
+  labs (title = "Сравнение остатков", y = "Значение", color = "Ряды")
+```
+
+**Ответьте на вопросы:**
+
+Какой из графиков нагляднее показывает отличие в реакции показателей на экономические кризисы 2008 и 2014 года?
+
+**Сезонно-скорректированные ряды**
+
+Какая из отраслей быстрее всего реагирует на кризис?   
+
+** Розничная торговля**
+
+Для какой из отраслей этот эффект наиболее выраженный?
+
+**Обрабатывающая промышленность** 
+
+Какая из отраслей быстрее всего восстанавливалась после кризиса 2008 года?  
+
+**Добыча полезных ископаемых**
+
+Отличается ли поведение показателей в кризисах 2008 и 2014 года?  
+
+**В 2014 году кризис практически не затронул добычу полезных ископаемых(видно по тренду), два других показателя повели себя аналогичным образом**
+
+**6. Преобразования данных**
+
+Подберите наилучшее значение параметра $\lambda$ преобразования Бокса-Кокса для каждого показателя. При необходимости, скорректируйте значение параметра для обеспечения простой интерпретации преобразованных данных.
+
+```{r}
+best_rtrd <- BoxCox.lambda(rtrd_1)
+best_cea <- BoxCox.lambda(cea)
+best_dea <- BoxCox.lambda(dea)
+autoplot(BoxCox(rtrd_1, best_rtrd)) + 
+    labs(title = "RTRD",
+         x = NULL, y = NULL)
+
+ autoplot(BoxCox(cea, best_cea))  + 
+    labs(title = "CEA",
+         x = NULL, y = NULL)
+  autoplot(BoxCox(dea, best_dea)) +
+    labs(title = "DEA",
+         x = NULL, y = NULL)
+  
+  rtrdbox <- BoxCox(rtrd_1, best_rtrd)
+  ceabox <- BoxCox(cea, best_cea)
+  deabox <- BoxCox(dea, best_dea)
+
+```
+
+
+
+Повторите сезонную декомпозицию методом STL, на этот раз используя фиксированный набор сезонных коэффициентов (`s.window = 'periodic'`) и преобразованные данные.
+
+
+```{r}
+rtrd_stl_bc <- stl(rtrdbox, s.window = 'periodic')
+
+cea_stl_bc <- stl(ceabox, s.window = 'periodic')
+
+dea_stl_bc <-stl(deabox, s.window = 'periodic')
+
+
+```
+
+
+Получите модель каждого ряда (сумма тренда и сезонного компонента). Затем постройте три графика, на каждом из которых в сравнивается исходный (непреобразованный) показатель и модель. Для перевода данных модели в шкалу исходного показателя используйте функцию `InvBoxCox()`.
+
+```{r}
+rtrdmod <- InvBoxCox((seasonal(rtrd_stl_bc) + trendcycle(rtrd_stl_bc)), best_rtrd)
+
+ceamod <- InvBoxCox((seasonal(cea_stl_bc) + trendcycle(cea_stl_bc)), best_cea)
+deamod  <- InvBoxCox((seasonal(dea_stl_bc) + trendcycle(dea_stl_bc)), best_dea)
+
+rtor <- seasonal(rtrd_stl) + trendcycle(rtrd_stl)
+ceaor <- seasonal(cea_stl) + trendcycle(cea_stl)
+deaor  <- seasonal(dea_stl) + trendcycle(dea_stl)
+
+autoplot(rtrdmod, series = "Модель") +
+  autolayer(rtor, series = "Оригинал (без остатка)") +
+  autolayer(rtrd_1, series = "Оригинал")
+
+autoplot(ceamod, series = "Модель") +
+  autolayer(ceaor, series = "Оригинал (без остатка)") +
+   autolayer(cea, series = "Оригинал")
+
+autoplot(deamod, series = "Модель") +
+  autolayer(deaor, series = "Оригинал (без остатка)")+
+   autolayer(dea, series = "Оригинал")
+
+```
+
