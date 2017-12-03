@@ -85,7 +85,7 @@ autoplot(trp) +
 
 ### Закономерные компоненты
 
-Наблюдаем ежегодную сезонность со спадами зимой (январь-февраль) и пиками в середине года (май-июнь). Это связано с государственными праздниками и началом сезона отпусков. Тип сезонности - аддитивный, т.к. колебания увеличиваются незначительно (возможно влияние случайной компоненты).
+Наблюдаем ежегодную сезонность со спадами зимой (январь-февраль) и пиками в середине года (май-июнь). Это связано с государственными праздниками и началом сезона отпусков. Тип сезонности - мультипликативный, т.к. колебания незначительно увеличиваются (например, после кризисов).
 Тренд нестабилен, но повышается.
 Заметны большие колебания случайной компоненты.
 
@@ -95,13 +95,15 @@ autoplot(trp) +
 ### Выбор модели
 
 ```{r}
-trph <- holt(trp, h = 24)
+trph <- holt(trp, h = 12)
 
-trpw <- hw(trp, h = 24, type = "additive")
+trpwm <- hw(trp, h = 12, seasonal = "multiplicative")
+trpwa <- hw(trp, h = 12, seasonal = "additive")
 
-autoplot(trp) +
-  autolayer(trph, PI = F) +
-  autolayer(trpw, PI = F)
+autoplot(window(trp, start = 2015)) +
+  autolayer(trph, PI = F, series = "Holt") +
+  autolayer(trpwm, PI = F, series = "Winters multiplicative") +
+  autolayer(trpwa, PI = F, series = "Winters additive")
 
 ```
 
@@ -111,17 +113,26 @@ autoplot(trp) +
 
 ### Ex-Post
 
+Сравним аддитивную и мультипликативную и аддитивную модели.
 
 ```{r}
 
 tr <- window(trp, end = c(2016, 9))
 
-tr_ad <- hw(tr, h = 12, type = "additive")
-tr_mu <- hw(tr, h = 12, type = "multiplicative")
+tr_ad <- hw(tr, h = 12, seasonal = "additive")
+tr_mu <- hw(tr, h = 12, seasonal = "multiplicative")
 
-autoplot(window(trp, start = 2016.10), series = "Факт") +
+autoplot(window(trp, start = c(2016,10)), series = "Факт") +
   autolayer(tr_ad$mean, series = "Аддитивная") +
   autolayer(tr_mu$mean, series = "Мультплик.")
+
+ rbind(accuracy(tr_mu), 
+             accuracy(tr_ad)) %>%
+   as.tibble() %>%
+   round(4) %>%
+mutate('Метод' = c('Мульт. модель', 'Адд.модель')) %>%
+   select(`Метод`, MASE, MAPE, MPE) %>%
+  arrange(MASE)
 
 rbind(
   accuracy(tr_ad, trp)['Test set',],
@@ -133,4 +144,48 @@ rbind(
   select(`Метод`, MASE, MAPE, MPE) %>%
   arrange(MASE)
 ```
+
+Исходя из анализа визуализации (движение мультипликативной модели сходно с фактом по структуре) и ошибок (две из трех исследуемых на тестовом периоде у мультипликативной модели - ниже) более корректной является мультипликативная модель.
+
+### Основной прогноз
+
+```{r}
+trpfcst <- hw(trp, h = 24, seasonal = "multiplicative")
+
+autoplot(trp) +
+  autolayer(trpfcst)
+
+autoplot(window(trp, start = 2014)) +
+  autolayer(trpfcst) 
+```
+
+
+
+```{r}
+RMSE <- function(errors) {
+  errors^2 %>% mean(na.rm = T) %>% sqrt()
+}
+
+```
+
+
+
+```{r}
+errcheck <- tibble(horizon = c(1,3,6,12,24))%>%
+      mutate(error = map_dbl(horizon,  function(x) tsCV(trp, hw, h = x) %>% RMSE() %>% round(2)))
+
+errcheck
+
+  
+```
+
+
+
+
+
+
+
+
+
+
 
